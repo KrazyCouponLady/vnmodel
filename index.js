@@ -13,6 +13,8 @@ module.exports = () => {
 
     const root = new ValueNode();
 
+    root._isRoot = true;
+
     /*
      * Traverses the tree for a specific node by lineage.
      */

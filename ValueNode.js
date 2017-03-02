@@ -1,6 +1,7 @@
 'use strict'
 
 const equal = require('./equal.js');
+const clone = require('./clone.js');
 
 module.exports = () => {
 
@@ -73,22 +74,27 @@ module.exports = () => {
      * Publish a change to the node's channel; subscribers will be notified of changes.
      */
     ValueNode.prototype.publish = function(value) {
-        let oldValue = this._value; // TODO: clone???
-        this._value = value; // TODO: clone???
+        // don't pass property references around to the various places they are used (including notifications)
+        let oldValue = clone(this._value);
+        this._value = clone(value);
         if (!equal(this._value, oldValue)) {
-            this._notify(this, this._value, oldValue);
+            this._notify(this._value, oldValue);
         }
     };
 
     /*
      * "Private" implementation for calling listeners on a value node. 
-     * TODO; recursively notify parents
      */
-    ValueNode.prototype._notify = function(node, newValue, oldValue) {
+    ValueNode.prototype._notify = function(newValue, oldValue) {
         let i = 0, length = 0;
 
-        for (i = 0, length = node._listeners.length; i < length; i++) {
-            node._listeners[i](node._name, newValue, oldValue);
+        for (i = 0, length = this._listeners.length; i < length; i++) {
+            this._listeners[i](this._name, newValue, oldValue);
+        }
+
+        let nodeParent = this._getParent();
+        if (!nodeParent._isRoot) {
+            nodeParent._notify(newValue, oldValue);
         }
     };
 

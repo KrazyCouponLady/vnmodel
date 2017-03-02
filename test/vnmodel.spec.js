@@ -20,8 +20,8 @@ describe('vnm', function() {
         let root = vnm();
         root.extend({ a: 1, b: { c: 2 } });
         let results = {a:false, c:false, c2:false};
-        root.a.subscribe((name, newValue, oldValue) => {
-            results.a = newValue === 3 && oldValue === 1;
+        root.b.subscribe((name, newValue, oldValue) => {
+            results.a = newValue === 4 && oldValue === 2;
         });
         root.b.c.subscribe((name, newValue, oldValue) => {
             results.c = newValue === 4 && oldValue === 2;
@@ -29,7 +29,6 @@ describe('vnm', function() {
         root.b.c.subscribe((name, newValue, oldValue) => {
             results.c2 = newValue === 4 && oldValue === 2;
         });
-        root.a.publish(3);
         root.b.c.publish(4);
         expect(results.a).to.equal(true);
         expect(results.c).to.equal(true);
@@ -69,5 +68,7 @@ describe('vnm', function() {
     it('should return root for the parent of root (you can\'t have "nothing" as a lineage)', function() {
         let root = vnm();
         expect(root._getParent()._name).to.equal('');
+        expect(root._getParent()._isRoot).to.equal(true);
     });
+
 });
