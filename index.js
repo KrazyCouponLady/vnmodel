@@ -7,11 +7,15 @@ const equal = require('./equal.js');
  */
 module.exports = () => {
 
-    function ValueNode(value, name, parentName) {
+    const root = new ValueNode();
+
+    // TODO: Add function to root node only for finding one of it's children with a lineage array
+
+    function ValueNode(value, name, parentNode) {
         this._listeners = [];
         this._value = value;
         this._name = name;
-        this._parent = parentName;
+        this._parent = parentNode;
     }
 
     /*
@@ -31,6 +35,13 @@ module.exports = () => {
     };
 
     /*
+     * "Private" implementation for getting the parent node without using a circular reference
+     */
+    ValueNode.prototype._getParent = function() {
+        // TODO: contact the root node, traverse children properties to thejparent
+    };
+
+    /*
      * Attaching a model will create children nodes on the parent.
      */
     ValueNode.prototype.extend = function(model) {
@@ -38,11 +49,11 @@ module.exports = () => {
         for (var i = 0, length = properties.length; i < length; i++) {
             let property = properties[i];
             if (typeof model[property] === 'object') {
-                this[property] = new ValueNode();
+                this[property] = new ValueNode(undefined, property, []); // TODO: lineage array
                 this[property].extend(model[property]);
             }
             else {
-                this[property] = new ValueNode(model[property]);
+                this[property] = new ValueNode(model[property], property, []); // TODO: lineage array
             }
         }
     };
@@ -87,5 +98,5 @@ module.exports = () => {
         }
     };
 
-    return new ValueNode();
+    return root;
 };
