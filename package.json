@@ -1,0 +1,26 @@
+{
+  "name": "vnmodel",
+  "version": "1.0.0",
+  "description": "A small, fast, easy-on-the-keyboard model library for building and managing application state with a minimum of chatter and waste.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "Model",
+    "State",
+    "Extend",
+    "Pub",
+    "Sub"
+  ],
+  "author": "ben.harris@thekrazycouponlady.com",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0"
+  }
+}
