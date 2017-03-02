@@ -20,13 +20,13 @@ describe('vnm', function() {
         let root = vnm();
         root.extend({ a: 1, b: { c: 2 } });
         let results = {a:false, c:false, c2:false};
-        root.a.subscribe((newValue, oldValue) => {
+        root.a.subscribe((name, newValue, oldValue) => {
             results.a = newValue === 3 && oldValue === 1;
         });
-        root.b.c.subscribe((newValue, oldValue) => {
+        root.b.c.subscribe((name, newValue, oldValue) => {
             results.c = newValue === 4 && oldValue === 2;
         });
-        root.b.c.subscribe((newValue, oldValue) => {
+        root.b.c.subscribe((name, newValue, oldValue) => {
             results.c2 = newValue === 4 && oldValue === 2;
         });
         root.a.publish(3);

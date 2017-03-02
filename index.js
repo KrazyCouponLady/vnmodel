@@ -7,9 +7,11 @@ const equal = require('./equal.js');
  */
 module.exports = () => {
 
-    function ValueNode(value) {
+    function ValueNode(value, name, parentName) {
         this._listeners = [];
         this._value = value;
+        this._name = name;
+        this._parent = parentName;
     }
 
     /*
@@ -46,11 +48,11 @@ module.exports = () => {
     };
 
     /*
-     * Subscribers hear all of the updates to the parent node's children.
+     * Subscriber's on a node, and the node's ancestors, hear all of the updates to the value.
      */
     ValueNode.prototype.subscribe = function(listener) {
         if (typeof listener !== 'function') {
-            throw new Error('Listeners must be functions');
+            throw new Error('Listeners must be functions, for example: (name, newValue, oldValue) => { ... }');
         }
         this._listeners.push(listener);
         const thisNode = this;
@@ -75,17 +77,13 @@ module.exports = () => {
 
     /*
      * "Private" implementation for calling listeners on a value node. 
+     * TODO; recursively notify parents
      */
     ValueNode.prototype._notify = function(node, newValue, oldValue) {
         let i = 0, length = 0;
 
         for (i = 0, length = node._listeners.length; i < length; i++) {
-            node._listeners[i](newValue, oldValue);
-        }
-
-        let children = node._getChildren();
-        for (i = 0, length = children.length; i < length; i++) {
-            node.notify(children[i], newValue, oldValue);
+            node._listeners[i](node._name, newValue, oldValue);
         }
     };
 
