@@ -9,13 +9,31 @@ module.exports = () => {
 
     const root = new ValueNode();
 
-    // TODO: Add function to root node only for finding one of it's children with a lineage array
+    /*
+     * Traverses the tree for a specific node by lineage
+     */
+    root._findNode = function(lineage, index, node) {
+        if (index == undefined) {
+            index = 0;
+        }
+        if (node == undefined) {
+            node = this;
+        }
+        if (index === lineage.length) {
+            return node;
+        }
+        const name = lineage[index];
+        if (node[name]) {
+            return this._findNode(lineage, index + 1, node[name]);
+        }
+        throw new Error('Could not find the indicated node by name: ' + name);
+    };
 
-    function ValueNode(value, name, parentNode) {
+    function ValueNode(value, name, lineage) {
         this._listeners = [];
         this._value = value;
-        this._name = name;
-        this._parent = parentNode;
+        this._name = name || '';
+        this._lineage = lineage || [];
     }
 
     /*
@@ -38,7 +56,7 @@ module.exports = () => {
      * "Private" implementation for getting the parent node without using a circular reference
      */
     ValueNode.prototype._getParent = function() {
-        // TODO: contact the root node, traverse children properties to thejparent
+        return root._findNode(this._lineage);
     };
 
     /*
@@ -46,14 +64,22 @@ module.exports = () => {
      */
     ValueNode.prototype.extend = function(model) {
         const properties = Object.getOwnPropertyNames(model);
+        let lineage = [];
+        if (this._name) {
+            lineage = [].concat(this._lineage, this._name);
+        }
+        else {
+            lineage = [].concat(this._lineage);
+        }
+
         for (var i = 0, length = properties.length; i < length; i++) {
             let property = properties[i];
             if (typeof model[property] === 'object') {
-                this[property] = new ValueNode(undefined, property, []); // TODO: lineage array
+                this[property] = new ValueNode(undefined, property, lineage);
                 this[property].extend(model[property]);
             }
             else {
-                this[property] = new ValueNode(model[property], property, []); // TODO: lineage array
+                this[property] = new ValueNode(model[property], property, lineage);
             }
         }
     };
