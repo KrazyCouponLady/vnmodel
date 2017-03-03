@@ -65,7 +65,7 @@ describe('vnm', function() {
         expect(root.a.b.c.d._getParent()._name).to.equal('c');
     });
 
-    it('should return root for the parent of root (you can\'t have "nothing" as a lineage)', function() {
+    it('should return root for the parent of root', function() {
         let root = vnm();
         expect(root._getParent()._name).to.equal('');
         expect(root._getParent()._isRoot).to.equal(true);
